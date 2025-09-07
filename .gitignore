@@ -1,0 +1,21 @@
+# VCS and tooling
+*.iml
+/.idea/
+/.vscode/
+/.junie/
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+.aider*
+.aider/
+
+
+.terraform/
+.terragrunt-cache/
+/private/terraform.tfstate
+/private/terraform.tfstate.backup
+terraform.tfstate*
+*.tfplan
+crash.log
+crash.*.log
