@@ -7,18 +7,22 @@ locals {
 # Protect main branch by default
 resource "github_branch_protection" "main" {
 
+  # Public repos cannot use branch protection rules until we upgrade to GitHub Teams.
+  count = var.visibility == "public" ? 1 : 0
+
   repository_id = github_repository.this.node_id
   pattern       = local.main_branch
 
   # require status checks even for repo admins
   enforce_admins = true
 
-  required_status_checks {
-    # Doesn't need to necessarily run against latest commit of main.
-    # That would require to much syncing from main and a lot of workflow runs.
-    strict   = false
-    contexts = ["*"]
-  }
+  # TODO: is there a way to dynamically require all checks?
+  # required_status_checks {
+  #   # Doesn't need to necessarily run against latest commit of main.
+  #   # That would require to much syncing from main and a lot of workflow runs.
+  #   strict   = false
+  #   contexts = ["*"]
+  # }
 
   required_pull_request_reviews {
     required_approving_review_count = 1

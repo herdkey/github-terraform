@@ -1,4 +1,4 @@
-# GitHub Terraform Boilerplate
+# GitHub Terraform
 
 This repository manages the GitHub organization and repository settings with Terraform via Terragrunt. This creates consistent repo settings.
 
