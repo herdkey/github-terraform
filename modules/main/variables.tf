@@ -3,6 +3,6 @@ variable "org" {
 }
 
 variable "admin_email" {
-  type = string
+  type    = string
   default = "michael@herdkey.com"
 }

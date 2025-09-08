@@ -1,5 +1,5 @@
 variable "org" {
-  type = string
+  type    = string
   default = "herdkey"
 }
 
@@ -8,11 +8,11 @@ variable "name" {
 }
 
 variable "description" {
-  type    = string
+  type = string
 }
 
 variable "visibility" {
-  type    = string
+  type = string
 }
 
 variable "homepage_url" {

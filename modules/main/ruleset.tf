@@ -4,7 +4,7 @@
 resource "github_repository_ruleset" "main" {
 
   # API gives 403 until we buy GitHub Teams
-  count       = 0
+  count = 0
 
   name        = "main"
   target      = "branch"
@@ -19,10 +19,10 @@ resource "github_repository_ruleset" "main" {
 
   rules {
     # Match your intent:
-    creation                = false   # don't restrict creating the branch
-    update                  = false   # don't lock the branch
-    deletion                = true    # block deletions
-    non_fast_forward        = true    # block force-pushes
+    creation                = false # don't restrict creating the branch
+    update                  = false # don't lock the branch
+    deletion                = true  # block deletions
+    non_fast_forward        = true  # block force-pushes
     required_linear_history = false
     required_signatures     = false
 
@@ -38,8 +38,8 @@ resource "github_repository_ruleset" "main" {
   }
 
   bypass_actors {
-    actor_type = "OrganizationAdmin"
-    actor_id = 1
+    actor_type  = "OrganizationAdmin"
+    actor_id    = 1
     bypass_mode = "pull_request"
   }
 }

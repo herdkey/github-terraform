@@ -27,10 +27,10 @@ resource "github_branch_protection" "main" {
   required_pull_request_reviews {
     required_approving_review_count = 1
     # don't dismiss approvals after a new push (helps us move faster)
-    dismiss_stale_reviews           = false
+    dismiss_stale_reviews = false
     # allow people to dismiss a blocking review that requested changes
-    restrict_dismissals             = false
-    require_code_owner_reviews      = false
+    restrict_dismissals        = false
+    require_code_owner_reviews = false
     pull_request_bypassers = [
       for user in local.super_admins :
       "/${user}"

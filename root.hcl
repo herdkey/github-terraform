@@ -11,24 +11,24 @@ locals {
 }
 
 # Configure remote state for all child Terragrunt configs via include
-# remote_state {
-#   backend = "s3"
-#   generate = {
-#     path      = "backend.tf"
-#     if_exists = "overwrite_terragrunt"
-#   }
-#   config = {
-#     bucket         = local.state_bucket
-#     key            = "${path_relative_to_include()}/terraform.tfstate"
-#     region         = local.state_region
-#     dynamodb_table = local.lock_table
-#     use_lockfile   = true
-#     encrypt        = true
-#     assume_role = {
-#       role_arn = "arn:aws:iam::${local.infra_account_id}:role/github-tf-backend-${local.tf_backend_role}"
-#     }
-#   }
-# }
+remote_state {
+  backend = "s3"
+  generate = {
+    path      = "backend.tf"
+    if_exists = "overwrite_terragrunt"
+  }
+  config = {
+    bucket         = local.state_bucket
+    key            = "${path_relative_to_include()}/terraform.tfstate"
+    region         = local.state_region
+    dynamodb_table = local.lock_table
+    use_lockfile   = true
+    encrypt        = true
+    assume_role = {
+      role_arn = "arn:aws:iam::${local.infra_account_id}:role/github-tf-backend-${local.tf_backend_role}"
+    }
+  }
+}
 
 generate "versions" {
   path      = "versions.tf"
