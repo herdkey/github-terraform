@@ -7,27 +7,28 @@ locals {
   lock_table       = "savi-github-tf-locks"
   infra_account_id = "073835883885"
   tf_backend_role  = get_env("TG_BACKEND_ROLE", "apply")
+  github_token     = get_env("GITHUB_TOKEN")
 }
 
 # Configure remote state for all child Terragrunt configs via include
-remote_state {
-  backend = "s3"
-  generate = {
-    path      = "backend.tf"
-    if_exists = "overwrite_terragrunt"
-  }
-  config = {
-    bucket         = local.state_bucket
-    key            = "${path_relative_to_include()}/terraform.tfstate"
-    region         = local.state_region
-    dynamodb_table = local.lock_table
-    use_lockfile   = true
-    encrypt        = true
-    assume_role = {
-      role_arn = "arn:aws:iam::${local.infra_account_id}:role/github-tf-backend-${local.tf_backend_role}"
-    }
-  }
-}
+# remote_state {
+#   backend = "s3"
+#   generate = {
+#     path      = "backend.tf"
+#     if_exists = "overwrite_terragrunt"
+#   }
+#   config = {
+#     bucket         = local.state_bucket
+#     key            = "${path_relative_to_include()}/terraform.tfstate"
+#     region         = local.state_region
+#     dynamodb_table = local.lock_table
+#     use_lockfile   = true
+#     encrypt        = true
+#     assume_role = {
+#       role_arn = "arn:aws:iam::${local.infra_account_id}:role/github-tf-backend-${local.tf_backend_role}"
+#     }
+#   }
+# }
 
 generate "versions" {
   path      = "versions.tf"
@@ -40,7 +41,7 @@ generate "versions" {
       required_providers {
         github = {
           source  = "integrations/github",
-          version = "~> 6.0"
+          version = ">= 6.0"
         }
         tls  = {
           source = "hashicorp/tls",
@@ -51,23 +52,6 @@ generate "versions" {
   EOF
 }
 
-generate "provider" {
-  path      = "provider.aws.tf"
-  if_exists = "overwrite_terragrunt"
-  contents  = <<EOF
-    provider "aws" {
-      region = "$${var.aws_region}"
-      # guardrail to prevent accidentally running in wrong account
-      allowed_account_ids = [var.aws_account_id]
-      default_tags {
-        tags = {
-          Environment = "$${var.env}"
-          ManagedBy   = "Terraform"
-        }
-      }
-    }
-  EOF
-}
 
 # Configure common Terraform CLI arguments (this is a common pattern)
 terraform {
@@ -81,12 +65,58 @@ terraform {
       "-input=false",
     ]
   }
+
+  extra_arguments "owner" {
+    # The "owner" field in the provider isn't working for some reason
+    env_vars = {
+      GITHUB_OWNER = "herdkey"
+    }
+
+    commands = [
+      "init",
+      "validate",
+      "plan",
+      "apply",
+      "destroy",
+      "console",
+      "fmt",
+      "force-unlock",
+      "get",
+      "graph",
+      "import",
+      "login",
+      "logout",
+      "metadata",
+      "output",
+      "providers",
+      "refresh",
+      "show",
+      "state",
+      "taint",
+      "test",
+      "untaint",
+      "version",
+      "workspace",
+    ]
+  }
+}
+
+generate "provider_github" {
+  path      = "provider.github.tf"
+  if_exists = "overwrite_terragrunt"
+  contents  = <<-EOF
+    provider "github" {
+      owner = "herdkey"   # TODO: this doesn't seem to be working, so relying on GITHUB_OWNER env var instead
+      token = "${local.github_token}"
+    }
+  EOF
 }
 
 # You can declare common inputs here to pass into modules (optional)
 inputs = {
-  aws_region        = local.aws_region
+  aws_region        = local.state_region
   state_bucket_name = local.state_bucket
   lock_table_name   = local.lock_table
   infra_account_id  = local.infra_account_id
+  org               = "HerdKey"
 }
