@@ -56,8 +56,11 @@ resource "github_repository_environment" "prod" {
   repository          = github_repository.this.name
   prevent_self_review = false
 
-  reviewers {
-    users = [for user in data.github_user.prod_reviewer : user.id]
+  dynamic "reviewers" {
+    for_each = local.enable_protection ? [true] : []
+    content {
+      users = [for user in data.github_user.prod_reviewer : user.id]
+    }
   }
 
   dynamic "deployment_branch_policy" {
