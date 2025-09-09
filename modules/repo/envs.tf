@@ -14,10 +14,6 @@ resource "github_repository_environment" "play" {
   environment         = "play"
   repository          = github_repository.this.name
   prevent_self_review = false
-  deployment_branch_policy {
-    protected_branches     = false
-    custom_branch_policies = false
-  }
 }
 
 
@@ -27,8 +23,11 @@ resource "github_repository_environment" "stage" {
   environment         = "stage"
   repository          = github_repository.this.name
   prevent_self_review = false
+
+  # NOTE: protected_branches and custom_branch_policies cannot have the same value
+  # https://docs.github.com/en/rest/deployments/environments?apiVersion=2022-11-28#create-or-update-an-environment
   deployment_branch_policy {
-    protected_branches     = true
+    protected_branches     = false
     custom_branch_policies = true
   }
 }
@@ -55,7 +54,7 @@ resource "github_repository_environment" "prod" {
     users = [for user in data.github_user.prod_reviewer : user.id]
   }
   deployment_branch_policy {
-    protected_branches     = true
+    protected_branches     = false
     custom_branch_policies = true
   }
 }
