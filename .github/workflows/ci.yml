@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: tg-ci-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  lint:
+    name: Lint
+    uses: ./.github/workflows/_lint.yml
+
+  plan:
+    name: Plan
+    if: ${{ github.ref != 'refs/heads/main' }}
+    uses: ./.github/workflows/_plan_apply.yml
+    needs: &needs
+      - lint
+    with:
+      tf_action: plan
+      app_id: '1923130'
+      app_installation_id: '85018802'
+    secrets:
+      app_pem_b64: ${{ secrets.APP_PRIVATE_KEY_B64 }}
+
+  apply:
+    name: Apply
+    if: ${{ github.ref == 'refs/heads/main' }}
+    uses: ./.github/workflows/_plan_apply.yml
+    needs: *needs
+    with:
+      tf_action: apply
+      environment: infra
+      app_id: '1923054'
+      app_installation_id: '85018833'
+    secrets:
+      app_pem_b64: ${{ secrets.APP_PRIVATE_KEY_B64 }}

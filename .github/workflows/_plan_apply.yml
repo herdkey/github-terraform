@@ -1,0 +1,106 @@
+name: Plan / Apply
+
+on:
+  workflow_call:
+    inputs:
+      tf_action:
+        description: "What to run: plan or apply"
+        type: string
+        required: true
+      aws_region:
+        description: "AWS region"
+        type: string
+        default: "us-west-2"
+      environment:
+        description: "Deployment environment"
+        type: string
+        required: false
+        default: ''
+      tofu_version:
+        description: "Tofu CLI version"
+        type: string
+        default: "1.10.6"
+      terragrunt_version:
+        description: "Terragrunt CLI version"
+        type: string
+        default: "v0.86.2"
+      app_id:
+        description: "GitHub App ID"
+        required: true
+        type: string
+      app_installation_id:
+        description: "GitHub App Installation ID"
+        required: true
+        type: string
+    secrets:
+      app_pem_b64:
+        description: "Base64-encoded private key (.pem)"
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  MODULE_ROOT: main
+  AWS_ACCOUNT_ID: '073835883885'
+  AWS_REGION: ${{ inputs.aws_region }}
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "0"
+  TG_SOURCE_UPDATE: "false"
+  TG_BACKEND_ROLE: ${{ inputs.tf_action }}
+  GITHUB_APP_ID: ${{ inputs.app_id }}
+  GITHUB_APP_INSTALLATION_ID: ${{ inputs.app_installation_id }}
+
+jobs:
+
+  plan-apply:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Init GitHub App PEM
+        shell: bash
+        run: |
+          echo "GITHUB_APP_PEM_FILE<<EOF" >> $GITHUB_ENV
+          echo "${{ secrets.app_pem_b64 }}" | base64 -d >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Debug OIDC
+        uses: ./.github/actions/debug-oidc
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github-tf-${{ inputs.tf_action }}
+          aws-region: ${{ env.AWS_REGION }}
+          retry-max-attempts: 2
+
+      - name: Install Terragrunt and OpenTofu
+        uses: gruntwork-io/terragrunt-action@v3
+        with:
+          tg_version: ${{ inputs.terragrunt_version }}
+          tofu_version: ${{ inputs.tofu_version }}
+
+      - name: Init
+        working-directory: ${{ env.MODULE_ROOT }}
+        run: terragrunt init -input=false --dependency-fetch-output-from-state
+
+      - name: Plan
+        if: ${{ inputs.tf_action == 'plan' }}
+        working-directory: ${{ env.MODULE_ROOT }}
+        # use -lock=false because the plan role doesn't have write access to TF state in S3 + Dynamo
+        run: terragrunt plan -input=false -lock=false --dependency-fetch-output-from-state
+
+      - name: Apply
+        if: ${{ inputs.tf_action == 'apply' }}
+        working-directory: ${{ env.MODULE_ROOT }}
+        run: |-
+          terragrunt apply \
+            -auto-approve \
+            -input=false \
+            -lock-timeout=20m \
+            --dependency-fetch-output-from-state

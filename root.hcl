@@ -7,28 +7,27 @@ locals {
   lock_table       = "savi-github-tf-locks"
   infra_account_id = "073835883885"
   tf_backend_role  = get_env("TG_BACKEND_ROLE", "apply")
-  github_token     = get_env("GITHUB_TOKEN")
 }
 
 # Configure remote state for all child Terragrunt configs via include
-# remote_state {
-#   backend = "s3"
-#   generate = {
-#     path      = "backend.tf"
-#     if_exists = "overwrite_terragrunt"
-#   }
-#   config = {
-#     bucket         = local.state_bucket
-#     key            = "${path_relative_to_include()}/terraform.tfstate"
-#     region         = local.state_region
-#     dynamodb_table = local.lock_table
-#     use_lockfile   = true
-#     encrypt        = true
-#     assume_role = {
-#       role_arn = "arn:aws:iam::${local.infra_account_id}:role/github-tf-backend-${local.tf_backend_role}"
-#     }
-#   }
-# }
+remote_state {
+  backend = "s3"
+  generate = {
+    path      = "backend.tf"
+    if_exists = "overwrite_terragrunt"
+  }
+  config = {
+    bucket         = local.state_bucket
+    key            = "${path_relative_to_include()}/terraform.tfstate"
+    region         = local.state_region
+    dynamodb_table = local.lock_table
+    use_lockfile   = true
+    encrypt        = true
+    assume_role = {
+      role_arn = "arn:aws:iam::${local.infra_account_id}:role/github-tf-backend-${local.tf_backend_role}"
+    }
+  }
+}
 
 generate "versions" {
   path      = "versions.tf"
@@ -107,7 +106,7 @@ generate "provider_github" {
   contents  = <<-EOF
     provider "github" {
       owner = "herdkey"   # TODO: this doesn't seem to be working, so relying on GITHUB_OWNER env var instead
-      token = "${local.github_token}"
+      app_auth {}
     }
   EOF
 }

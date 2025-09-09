@@ -1,0 +1,55 @@
+name: Lint
+
+on:
+  workflow_call:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: tg-lint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Terragrunt and OpenTofu
+        uses: gruntwork-io/terragrunt-action@v3
+        with:
+          tg_version: '0.86.2'
+          tofu_version: '1.10.6'
+
+      - name: Format TF
+        run: tofu fmt -recursive -check -diff
+
+      - name: Format HCL
+        run: terragrunt hcl fmt --check
+
+  lint:
+    name: TFLint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: latest
+
+      - name: TFLint Init
+        run: tflint --init
+
+      - name: TFLint
+        run: tflint --recursive --config="$(pwd)/.tflint.hcl" -f compact --force
