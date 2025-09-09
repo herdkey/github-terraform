@@ -8,6 +8,7 @@ data "github_user" "prod_reviewer" {
   username = each.value
 }
 
+
 # Play
 resource "github_repository_environment" "play" {
   count               = contains(var.envs, "play") ? 1 : 0
@@ -24,11 +25,15 @@ resource "github_repository_environment" "stage" {
   repository          = github_repository.this.name
   prevent_self_review = false
 
-  # NOTE: protected_branches and custom_branch_policies cannot have the same value
-  # https://docs.github.com/en/rest/deployments/environments?apiVersion=2022-11-28#create-or-update-an-environment
-  deployment_branch_policy {
-    protected_branches     = false
-    custom_branch_policies = true && local.enable_protection
+  # We can only include this block in public repos, until we upgrade to GitHub Teams
+  dynamic "deployment_branch_policy" {
+    for_each = local.enable_protection ? [true] : []
+    content {
+      # NOTE: protected_branches and custom_branch_policies cannot have the same value
+      # https://docs.github.com/en/rest/deployments/environments?apiVersion=2022-11-28#create-or-update-an-environment
+      protected_branches     = false
+      custom_branch_policies = true
+    }
   }
 }
 
@@ -50,12 +55,17 @@ resource "github_repository_environment" "prod" {
   environment         = "prod"
   repository          = github_repository.this.name
   prevent_self_review = false
+
   reviewers {
     users = [for user in data.github_user.prod_reviewer : user.id]
   }
-  deployment_branch_policy {
-    protected_branches     = false
-    custom_branch_policies = true && local.enable_protection
+
+  dynamic "deployment_branch_policy" {
+    for_each = local.enable_protection ? [true] : []
+    content {
+      protected_branches     = false
+      custom_branch_policies = true
+    }
   }
 }
 
