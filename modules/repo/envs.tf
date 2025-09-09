@@ -28,7 +28,7 @@ resource "github_repository_environment" "stage" {
   # https://docs.github.com/en/rest/deployments/environments?apiVersion=2022-11-28#create-or-update-an-environment
   deployment_branch_policy {
     protected_branches     = false
-    custom_branch_policies = true
+    custom_branch_policies = true && local.enable_protection
   }
 }
 
@@ -55,7 +55,7 @@ resource "github_repository_environment" "prod" {
   }
   deployment_branch_policy {
     protected_branches     = false
-    custom_branch_policies = true
+    custom_branch_policies = true && local.enable_protection
   }
 }
 
