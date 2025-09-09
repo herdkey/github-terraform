@@ -7,7 +7,6 @@ locals {
   lock_table       = "savi-github-tf-locks"
   infra_account_id = "073835883885"
   tf_backend_role  = get_env("TG_BACKEND_ROLE", "apply")
-  github_token     = get_env("GITHUB_TOKEN")
 }
 
 # Configure remote state for all child Terragrunt configs via include
@@ -107,7 +106,7 @@ generate "provider_github" {
   contents  = <<-EOF
     provider "github" {
       owner = "herdkey"   # TODO: this doesn't seem to be working, so relying on GITHUB_OWNER env var instead
-      token = "${local.github_token}"
+      app_auth {}
     }
   EOF
 }

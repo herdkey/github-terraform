@@ -27,6 +27,10 @@ jobs:
       - lint
     with:
       tf_action: plan
+      app_id: '1923130'
+      app_installation_id: '85018802'
+    secrets:
+      app_pem_b64: ${{ secrets.APP_PRIVATE_KEY_B64 }}
 
   apply:
     name: Apply
@@ -36,3 +40,7 @@ jobs:
     with:
       tf_action: apply
       environment: infra
+      app_id: '1923054'
+      app_installation_id: '85018833'
+    secrets:
+      app_pem_b64: ${{ secrets.APP_PRIVATE_KEY_B64 }}
