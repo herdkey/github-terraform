@@ -7,7 +7,7 @@ locals {
 # Protect main branch by default
 resource "github_branch_protection" "main" {
 
-  # Public repos cannot use branch protection rules until we upgrade to GitHub Teams.
+  # Private repos cannot use branch protection rules until we upgrade to GitHub Teams.
   count = var.visibility == "public" ? 1 : 0
 
   repository_id = github_repository.this.node_id
