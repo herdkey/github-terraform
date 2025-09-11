@@ -29,3 +29,11 @@ module "hello-go" {
   description    = "Go backend server boilerplate"
   prod_reviewers = local.prod_reviewers
 }
+
+module "hello-twilio" {
+  source         = "../repo"
+  name           = "hello-twilio"
+  visibility     = "public"
+  description    = "Twilio function POC"
+  prod_reviewers = local.prod_reviewers
+}
