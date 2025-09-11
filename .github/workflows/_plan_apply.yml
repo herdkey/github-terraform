@@ -42,7 +42,7 @@ permissions:
   contents: read
 
 env:
-  MODULE_ROOT: main
+  MODULE_ROOT: live
   AWS_ACCOUNT_ID: '073835883885'
   AWS_REGION: ${{ inputs.aws_region }}
   TF_IN_AUTOMATION: "true"
