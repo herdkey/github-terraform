@@ -4,5 +4,5 @@ include "root" {
 }
 
 terraform {
-  source = "${get_repo_root()}//modules/main"
+  source = "${get_repo_root()}//modules/live"
 }
