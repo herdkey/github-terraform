@@ -39,7 +39,46 @@ resource "github_repository_ruleset" "main" {
 
   bypass_actors {
     actor_type  = "OrganizationAdmin"
-    actor_id    = 1
+    actor_id    = 1     # constant meaning "all org admins"
+    bypass_mode = "pull_request"
+  }
+}
+
+# Protect tags like v1, v1.2.3, etc., and enforce a tag-name pattern
+resource "github_repository_ruleset" "version_tags" {
+
+  # API gives 403 until we buy GitHub Teams
+  count = 0
+
+  name        = "protect v* tags"
+  target      = "tag"
+  enforcement = "active"
+
+  conditions {
+    ref_name {
+      include = ["refs/tags/v*"]
+      exclude = []
+    }
+  }
+
+  rules {
+    # Creation allowed; flip to true to forbid creating new v* tags
+    creation         = false
+    update           = true   # block moving (retagging)
+    deletion         = true   # block deleting tags
+    non_fast_forward = true
+
+    # loose SemVer (vMAJOR or vMAJOR.MINOR or vMAJOR.MINOR.PATCH)
+    tag_name_pattern {
+      operator = "regex"
+      # v1  or  v1.2  or  v1.2.3
+      pattern  = "^v\\d+(?:\\.\\d+){0,2}$"
+    }
+  }
+
+  bypass_actors {
+    actor_type  = "OrganizationAdmin"
+    actor_id    = 1     # constant meaning "all org admins"
     bypass_mode = "pull_request"
   }
 }

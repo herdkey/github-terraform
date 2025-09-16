@@ -49,3 +49,9 @@ resource "github_branch_protection" "main" {
 
   require_signed_commits = false
 }
+
+// Protect version tags
+resource "github_repository_tag_protection" "version_tags" {
+  repository = github_repository.this.name
+  pattern    = "v*"
+}
