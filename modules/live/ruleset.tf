@@ -1,28 +1,30 @@
 # This mirrors our branch protection rules.
 # But we can't use Rulesets until we buy GitHub Teams.
 # So this is disabled (see count=0 below).
-resource "github_repository_ruleset" "main" {
+resource "github_repository_ruleset" "main_and_version_branches" {
 
   # API gives 403 until we buy GitHub Teams
   count = 0
 
-  name        = "main"
+  name        = "main + v* branches"
   target      = "branch"
   enforcement = "active"
 
   conditions {
     ref_name {
-      include = ["main"]
+      include = [
+        "refs/heads/main",
+        "refs/heads/v*"
+      ]
       exclude = []
     }
   }
 
   rules {
-    # Match your intent:
-    creation                = false # don't restrict creating the branch
-    update                  = false # don't lock the branch
-    deletion                = true  # block deletions
-    non_fast_forward        = true  # block force-pushes
+    creation                = false # allow creating new branches
+    update                  = false # allow normal pushes
+    deletion                = true  # block branch deletion
+    non_fast_forward        = true  # block force pushes
     required_linear_history = false
     required_signatures     = false
 
@@ -34,12 +36,11 @@ resource "github_repository_ruleset" "main" {
       require_last_push_approval        = false
       required_review_thread_resolution = false
     }
-
   }
 
   bypass_actors {
     actor_type  = "OrganizationAdmin"
-    actor_id    = 1     # constant meaning "all org admins"
+    actor_id    = 1 # constant meaning "all org admins"
     bypass_mode = "pull_request"
   }
 }
@@ -64,21 +65,21 @@ resource "github_repository_ruleset" "version_tags" {
   rules {
     # Creation allowed; flip to true to forbid creating new v* tags
     creation         = false
-    update           = true   # block moving (retagging)
-    deletion         = true   # block deleting tags
+    update           = true # block moving (retagging)
+    deletion         = true # block deleting tags
     non_fast_forward = true
 
     # loose SemVer (vMAJOR or vMAJOR.MINOR or vMAJOR.MINOR.PATCH)
     tag_name_pattern {
       operator = "regex"
       # v1  or  v1.2  or  v1.2.3
-      pattern  = "^v\\d+(?:\\.\\d+){0,2}$"
+      pattern = "^v\\d+(?:\\.\\d+){0,2}$"
     }
   }
 
   bypass_actors {
     actor_type  = "OrganizationAdmin"
-    actor_id    = 1     # constant meaning "all org admins"
+    actor_id    = 1 # constant meaning "all org admins"
     bypass_mode = "pull_request"
   }
 }
