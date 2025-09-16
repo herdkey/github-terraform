@@ -73,7 +73,7 @@ jobs:
       - name: Debug OIDC
         uses: ./.github/actions/debug-oidc
 
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github-tf-${{ inputs.tf_action }}
           aws-region: ${{ env.AWS_REGION }}
