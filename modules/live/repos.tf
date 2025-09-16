@@ -37,3 +37,11 @@ module "hello-twilio" {
   description    = "Twilio function POC"
   prod_reviewers = local.prod_reviewers
 }
+
+module "renovate-config" {
+  source         = "../repo"
+  name           = "renovate-config"
+  visibility     = "public"
+  description    = "Shared renovate configurations"
+  prod_reviewers = local.prod_reviewers
+}
