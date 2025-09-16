@@ -1,5 +1,5 @@
-# Use bash with strict-ish mode for safety
-set shell := ["bash", "-uc"]
+# Use bash and fail immediately on errors
+set shell := ["/usr/bin/env", "bash", "-euo", "pipefail", "-c"]
 
 # -----------------------------------------------------------------------------
 # Repository-wide helpers
