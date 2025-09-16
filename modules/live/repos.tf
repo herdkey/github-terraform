@@ -2,6 +2,12 @@ locals {
   prod_reviewers = [
     github_membership.michaelknopf.username,
   ]
+  platform_topic  = "platform"
+  terraform_topic = "terraform"
+  renovate_topic  = "renovate"
+  hello_topic     = "hello-world"
+  go_topic        = "go"
+  js_topic        = "js"
 }
 
 module "github-terraform" {
@@ -11,6 +17,7 @@ module "github-terraform" {
   description    = "Terraform to manage this GitHub organization"
   envs           = ["play", "stage", "prod", "infra"]
   prod_reviewers = local.prod_reviewers
+  topics         = [local.platform_topic, local.terraform_topic]
 }
 
 module "infra-terraform" {
@@ -20,22 +27,7 @@ module "infra-terraform" {
   description    = "Terraform to manage our AWS infrastructure"
   envs           = ["play", "stage", "prod", "infra"]
   prod_reviewers = local.prod_reviewers
-}
-
-module "hello-go" {
-  source         = "../repo"
-  name           = "hello-go"
-  visibility     = "public"
-  description    = "Go backend server boilerplate"
-  prod_reviewers = local.prod_reviewers
-}
-
-module "hello-twilio" {
-  source         = "../repo"
-  name           = "hello-twilio"
-  visibility     = "public"
-  description    = "Twilio function POC"
-  prod_reviewers = local.prod_reviewers
+  topics         = [local.platform_topic, local.terraform_topic]
 }
 
 module "renovate-config" {
@@ -44,4 +36,23 @@ module "renovate-config" {
   visibility     = "public"
   description    = "Shared renovate configurations"
   prod_reviewers = local.prod_reviewers
+  topics         = [local.platform_topic, local.renovate_topic]
+}
+
+module "hello-go" {
+  source         = "../repo"
+  name           = "hello-go"
+  visibility     = "public"
+  description    = "Go backend server boilerplate"
+  prod_reviewers = local.prod_reviewers
+  topics         = [local.go_topic, local.hello_topic]
+}
+
+module "hello-twilio" {
+  source         = "../repo"
+  name           = "hello-twilio"
+  visibility     = "public"
+  description    = "Twilio function POC"
+  prod_reviewers = local.prod_reviewers
+  topics         = [local.js_topic, local.hello_topic]
 }
