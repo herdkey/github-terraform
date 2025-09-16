@@ -2,16 +2,17 @@ locals {
   super_admins = [
     "michaelknopf"
   ]
+  branch_patterns = var.visibility == "public" ? [local.main_branch, "v*"] : []
 }
 
 # Protect main branch by default
 resource "github_branch_protection" "main" {
 
   # Private repos cannot use branch protection rules until we upgrade to GitHub Teams.
-  count = var.visibility == "public" ? 1 : 0
+  for_each = toset(local.branch_patterns)
 
   repository_id = github_repository.this.node_id
-  pattern       = local.main_branch
+  pattern       = each.value
 
   # require status checks even for repo admins
   enforce_admins = true
