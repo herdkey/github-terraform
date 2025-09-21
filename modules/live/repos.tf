@@ -39,6 +39,14 @@ module "renovate-config" {
   topics         = [local.platform_topic, local.renovate_topic]
 }
 
+module "github-actions" {
+  source         = "../repo"
+  name           = "github-actions"
+  visibility     = "public"
+  description    = "Shared GitHub Actions"
+  prod_reviewers = local.prod_reviewers
+}
+
 module "hello-go" {
   source         = "../repo"
   name           = "hello-go"
