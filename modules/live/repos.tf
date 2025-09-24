@@ -45,6 +45,16 @@ module "github-actions" {
   visibility     = "public"
   description    = "Shared GitHub Actions"
   prod_reviewers = local.prod_reviewers
+  topics         = [local.platform_topic]
+}
+
+module "just-common" {
+  source         = "../repo"
+  name           = "just-common"
+  visibility     = "public"
+  description    = "Common Justfiles"
+  prod_reviewers = local.prod_reviewers
+  topics         = [local.platform_topic]
 }
 
 module "hello-go" {
