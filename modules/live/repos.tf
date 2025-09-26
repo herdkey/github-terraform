@@ -57,6 +57,15 @@ module "just-common" {
   topics         = [local.platform_topic]
 }
 
+module "savi-pytools" {
+  source         = "../repo"
+  name           = "savi-pytools"
+  visibility     = "public"
+  description    = "Tools for development"
+  prod_reviewers = local.prod_reviewers
+  topics         = [local.platform_topic]
+}
+
 module "hello-go" {
   source         = "../repo"
   name           = "hello-go"
