@@ -83,3 +83,12 @@ module "hello-twilio" {
   prod_reviewers = local.prod_reviewers
   topics         = [local.js_topic, local.hello_topic]
 }
+
+module "hello-react-native" {
+  source         = "../repo"
+  name           = "hello-react-native"
+  visibility     = "public"
+  description    = "React Native POC"
+  prod_reviewers = local.prod_reviewers
+  topics         = [local.js_topic, local.hello_topic]
+}
