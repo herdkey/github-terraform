@@ -26,12 +26,16 @@ variable "topics" {
   default = []
 }
 
+locals {
+  allowed_envs = ["play", "stage", "prod", "infra", "github"]
+}
+
 variable "envs" {
   type        = list(string)
   default     = ["play", "stage", "prod"]
   description = "Environments to enable."
   validation {
-    condition     = length(setintersection(["play", "stage", "prod", "infra"], var.envs)) > 0
+    condition     = setintersection(local.allowed_envs, var.envs) == toset(var.envs)
     error_message = "Environment must be one of: play, stage, prod, or infra."
   }
 }
