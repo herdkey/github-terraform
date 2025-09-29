@@ -15,7 +15,7 @@ module "github-terraform" {
   name           = "github-terraform"
   visibility     = "public"
   description    = "Terraform to manage this GitHub organization"
-  envs           = ["play", "stage", "prod", "infra"]
+  envs           = ["infra", "github"]
   prod_reviewers = local.prod_reviewers
   topics         = [local.platform_topic, local.terraform_topic]
 }
@@ -35,6 +35,7 @@ module "renovate-config" {
   name           = "renovate-config"
   visibility     = "public"
   description    = "Shared renovate configurations"
+  envs           = []
   prod_reviewers = local.prod_reviewers
   topics         = [local.platform_topic, local.renovate_topic]
 }
@@ -44,6 +45,7 @@ module "github-actions" {
   name           = "github-actions"
   visibility     = "public"
   description    = "Shared GitHub Actions"
+  envs           = []
   prod_reviewers = local.prod_reviewers
   topics         = [local.platform_topic]
 }
@@ -53,6 +55,7 @@ module "just-common" {
   name           = "just-common"
   visibility     = "public"
   description    = "Common Justfiles"
+  envs           = []
   prod_reviewers = local.prod_reviewers
   topics         = [local.platform_topic]
 }
@@ -62,6 +65,7 @@ module "savi-pytools" {
   name           = "savi-pytools"
   visibility     = "public"
   description    = "Tools for development"
+  envs           = []
   prod_reviewers = local.prod_reviewers
   topics         = [local.platform_topic]
 }
@@ -71,6 +75,7 @@ module "hello-go" {
   name           = "hello-go"
   visibility     = "public"
   description    = "Go backend server boilerplate"
+  envs           = ["play", "stage", "prod"]
   prod_reviewers = local.prod_reviewers
   topics         = [local.go_topic, local.hello_topic]
 }
@@ -80,6 +85,7 @@ module "hello-twilio" {
   name           = "hello-twilio"
   visibility     = "public"
   description    = "Twilio function POC"
+  envs           = ["play", "stage", "prod"]
   prod_reviewers = local.prod_reviewers
   topics         = [local.js_topic, local.hello_topic]
 }
@@ -89,6 +95,17 @@ module "hello-react-native" {
   name           = "hello-react-native"
   visibility     = "public"
   description    = "React Native POC"
+  envs           = ["play", "stage", "prod"]
   prod_reviewers = local.prod_reviewers
   topics         = [local.js_topic, local.hello_topic]
+}
+
+module "hello-flutter" {
+  source         = "../repo"
+  name           = "hello-flutter"
+  visibility     = "public"
+  description    = "Flutter POC"
+  envs           = ["play", "stage", "prod"]
+  prod_reviewers = local.prod_reviewers
+  topics         = [local.hello_topic]
 }
