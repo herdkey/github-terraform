@@ -39,7 +39,7 @@ jobs:
     needs: *needs
     with:
       tf_action: apply
-      environment: infra
+      environment: github
       app_id: '1923054'
       app_installation_id: '85018833'
     secrets:
