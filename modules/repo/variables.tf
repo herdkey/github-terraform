@@ -1,7 +1,7 @@
 # noinspection TfUnusedElements tflint-ignore: terraform_unused_declarations
 variable "org" {
   type    = string
-  default = "herdkey"
+  default = "savisec"
 }
 
 variable "name" {

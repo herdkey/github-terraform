@@ -2,7 +2,7 @@
 # GitHub provider exposes some org settings via resources and data.
 # Many org settings are limited; we at least manage default repository settings via github_organization_settings.
 resource "github_organization_settings" "this" {
-  name    = var.org
+  name    = "Savi"
   company = "Savi Security"
   email   = var.admin_email
 

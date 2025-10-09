@@ -68,7 +68,7 @@ terraform {
   extra_arguments "owner" {
     # The "owner" field in the provider isn't working for some reason
     env_vars = {
-      GITHUB_OWNER = "herdkey"
+      GITHUB_OWNER = "savisec"
     }
 
     commands = [
@@ -105,7 +105,7 @@ generate "provider_github" {
   if_exists = "overwrite_terragrunt"
   contents  = <<-EOF
     provider "github" {
-      owner = "herdkey"   # TODO: this doesn't seem to be working, so relying on GITHUB_OWNER env var instead
+      owner = "savisec"   # TODO: this doesn't seem to be working, so relying on GITHUB_OWNER env var instead
       app_auth {}
     }
   EOF
@@ -117,5 +117,4 @@ inputs = {
   state_bucket_name = local.state_bucket
   lock_table_name   = local.lock_table
   infra_account_id  = local.infra_account_id
-  org               = "HerdKey"
 }
