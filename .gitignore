@@ -10,7 +10,10 @@ Thumbs.db
 .aider*
 .aider/
 
+# Justfiles
+.justfiles
 
+# Terraform
 .terraform/
 .terragrunt-cache/
 /private/terraform.tfstate
