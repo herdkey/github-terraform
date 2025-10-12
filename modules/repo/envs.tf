@@ -20,6 +20,12 @@ resource "github_repository_environment" "play" {
   prevent_self_review = false
 }
 
+resource "github_actions_environment_variable" "play_aws_account_id" {
+  repository    = github_repository.this.name
+  environment   = "play"
+  variable_name = "AWS_ACCOUNT_ID_LIVE"
+  value         = "662682347177"
+}
 
 ################################################################################
 #                                    Stage                                     #
@@ -50,6 +56,13 @@ resource "github_repository_environment_deployment_policy" "stage" {
   repository     = github_repository.this.name
   environment    = github_repository_environment.stage[0].environment
   branch_pattern = "main"
+}
+
+resource "github_actions_environment_variable" "stage_aws_account_id" {
+  repository    = github_repository.this.name
+  environment   = "stage"
+  variable_name = "AWS_ACCOUNT_ID_LIVE"
+  value         = ""
 }
 
 
@@ -88,6 +101,12 @@ resource "github_repository_environment_deployment_policy" "prod" {
   branch_pattern = "main"
 }
 
+resource "github_actions_environment_variable" "prod_aws_account_id" {
+  repository    = github_repository.this.name
+  environment   = "prod"
+  variable_name = "AWS_ACCOUNT_ID_LIVE"
+  value         = ""
+}
 
 ################################################################################
 #                                    Infra                                     #
