@@ -2,7 +2,13 @@ locals {
   super_admins = [
     "michaelknopf"
   ]
+  main_branch     = "main"
   branch_patterns = var.visibility == "public" ? [local.main_branch, "v*"] : []
+}
+
+# Look up the Renovate GitHub App by slug ("renovate" for the hosted app)
+data "github_app" "renovate" {
+  slug = "renovate"
 }
 
 # Protect main branch by default
@@ -32,10 +38,13 @@ resource "github_branch_protection" "main" {
     # allow people to dismiss a blocking review that requested changes
     restrict_dismissals        = false
     require_code_owner_reviews = false
-    pull_request_bypassers = [
+    pull_request_bypassers = concat([
       for user in local.super_admins :
       "/${user}"
-    ]
+      ], [
+      # allow renovate to merge PRs without approval
+      data.github_app.renovate.node_id,
+    ])
   }
 
   restrict_pushes {
