@@ -21,6 +21,7 @@ resource "github_repository_environment" "play" {
 }
 
 resource "github_actions_environment_variable" "play_aws_account_id" {
+  count         = contains(var.envs, "play") ? 1 : 0
   repository    = github_repository.this.name
   environment   = "play"
   variable_name = "AWS_ACCOUNT_ID_LIVE"
@@ -58,12 +59,13 @@ resource "github_repository_environment_deployment_policy" "stage" {
   branch_pattern = "main"
 }
 
-resource "github_actions_environment_variable" "stage_aws_account_id" {
-  repository    = github_repository.this.name
-  environment   = "stage"
-  variable_name = "AWS_ACCOUNT_ID_LIVE"
-  value         = ""
-}
+# TODO: Uncomment when we have a stage AWS account
+# resource "github_actions_environment_variable" "stage_aws_account_id" {
+#   repository    = github_repository.this.name
+#   environment   = "stage"
+#   variable_name = "AWS_ACCOUNT_ID_LIVE"
+#   value         = ""
+# }
 
 
 ################################################################################
@@ -101,12 +103,13 @@ resource "github_repository_environment_deployment_policy" "prod" {
   branch_pattern = "main"
 }
 
-resource "github_actions_environment_variable" "prod_aws_account_id" {
-  repository    = github_repository.this.name
-  environment   = "prod"
-  variable_name = "AWS_ACCOUNT_ID_LIVE"
-  value         = ""
-}
+# TODO: Uncomment when we have a prod AWS account
+# resource "github_actions_environment_variable" "prod_aws_account_id" {
+#   repository    = github_repository.this.name
+#   environment   = "prod"
+#   variable_name = "AWS_ACCOUNT_ID_LIVE"
+#   value         = ""
+# }
 
 ################################################################################
 #                                    Infra                                     #
