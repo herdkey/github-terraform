@@ -8,6 +8,12 @@ locals {
   hello_topic     = "hello-world"
   go_topic        = "go"
   js_topic        = "js"
+
+  # envs needed by services, since they usually publish docker images to
+  # the release tier in ECR and deploy into live environments (play/stage/prod).
+  service_envs = ["release", "play", "stage", "prod"]
+  # envs needed by repos that house libraries/packages that they publish to CodeArtifact.
+  library_envs = ["release"]
 }
 
 module "github-terraform" {
@@ -75,7 +81,7 @@ module "hello-go" {
   name           = "hello-go"
   visibility     = "public"
   description    = "Go backend server boilerplate"
-  envs           = ["play", "stage", "prod"]
+  envs           = local.service_envs
   prod_reviewers = local.prod_reviewers
   topics         = [local.go_topic, local.hello_topic]
 }
@@ -85,7 +91,7 @@ module "hello-twilio" {
   name           = "hello-twilio"
   visibility     = "public"
   description    = "Twilio function POC"
-  envs           = ["play", "stage", "prod"]
+  envs           = local.service_envs
   prod_reviewers = local.prod_reviewers
   topics         = [local.js_topic, local.hello_topic]
 }
@@ -95,7 +101,7 @@ module "hello-react-native" {
   name           = "hello-react-native"
   visibility     = "public"
   description    = "React Native POC"
-  envs           = ["play", "stage", "prod"]
+  envs           = []
   prod_reviewers = local.prod_reviewers
   topics         = [local.js_topic, local.hello_topic]
 }
@@ -105,7 +111,7 @@ module "hello-flutter" {
   name           = "hello-flutter"
   visibility     = "public"
   description    = "Flutter POC"
-  envs           = ["play", "stage", "prod"]
+  envs           = []
   prod_reviewers = local.prod_reviewers
   topics         = [local.hello_topic]
 }

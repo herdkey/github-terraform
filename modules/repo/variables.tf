@@ -27,16 +27,28 @@ variable "topics" {
 }
 
 locals {
-  allowed_envs = ["play", "stage", "prod", "infra", "github"]
+  allowed_envs = [
+    # Live environments
+    "play",
+    "stage",
+    "prod",
+    # For workflows that make changes to the infra account
+    "infra",
+    # For workflows that modify GitHub things in GitHub
+    "github",
+    # Publish releases to the "release" tier in ECR or CodeArtifact
+    "release",
+  ]
+  envs_error_msg = "Environment must be one of: ${join(", ", local.allowed_envs)}"
 }
 
 variable "envs" {
   type        = list(string)
-  default     = ["play", "stage", "prod"]
+  default     = ["release", "play", "stage", "prod"]
   description = "Environments to enable."
   validation {
     condition     = setintersection(local.allowed_envs, var.envs) == toset(var.envs)
-    error_message = "Environment must be one of: play, stage, prod, or infra."
+    error_message = local.envs_error_msg
   }
 }
 
